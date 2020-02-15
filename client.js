@@ -1,13 +1,13 @@
-let grpc = require("grpc");
-let protoLoader = require("@grpc/proto-loader");
-let readline = require("readline");
+const grpc = require("grpc");
+const protoLoader = require("@grpc/proto-loader");
+const readline = require("readline");
 
-let rl = readline.createInterface({
+const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-let proto = grpc.loadPackageDefinition(
+const proto = grpc.loadPackageDefinition(
     protoLoader.loadSync("protos/chat.proto", {
         keepCase: true,
         longs: String,
@@ -17,9 +17,7 @@ let proto = grpc.loadPackageDefinition(
     })
 );
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
+getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
 
 const REMOTE_SERVER = "0.0.0.0:3000";
 
@@ -27,24 +25,24 @@ let username;
 let idReceiver = -1;
 let idSender;
 
-let client = new proto.example.Chat(
+const client = new proto.example.Chat(
     REMOTE_SERVER,
     grpc.credentials.createInsecure()
 );
 
-function startChat() {
+startChat = () => {
     let channel = client.join({user: username, receiver: idReceiver, sender: idSender});
     let date = new Date().toDateString();
 
     channel.on("data", onData);
 
-    rl.on("line", function (text) {
+    rl.on("line", text => {
         client.send({user: username, text, date, receiver: idReceiver, sender: idSender}, res => {
         });
     });
 }
 
-function onData(message) {
+onData = message => {
     let finalMessage = `User: ${message.user}
     - текст: ${message.text} 
     - дата: ${message.date} 
@@ -60,7 +58,7 @@ function onData(message) {
         console.log(finalMessage);
     }
 
-}
+};
 
 rl.question("Как вас зовут? ", answer => {
     username = answer;
